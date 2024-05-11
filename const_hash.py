@@ -6,12 +6,18 @@ class HashRing:
     def __init__(self):
         self.nodes = SortedList()
         self.ring = {}
+        
     
+    @staticmethod
+    def get_hash(key):
+        # generate md5 hash of any key string
+        return hashlib.md5(key.encode()).hexdigest()
+
     def add_node(self, node):
         '''
         Add node to hashring
         '''
-        node_hash = hashlib.md5(node.encode()).hexdigest()
+        node_hash = HashRing.get_hash(node)
         if node_hash in self.nodes:
             print("Node is already added to ring.")
             return
@@ -25,7 +31,7 @@ class HashRing:
         # if no host added to ring, return -1
         if not self.nodes:
             return -1
-        key_hash = hashlib.md5(key.encode()).hexdigest()
+        key_hash = HashRing.get_hash(key)
         position = bisect.bisect(self.nodes, key_hash) % len(self.nodes)
         return self.ring[self.nodes[position]]
 
@@ -33,7 +39,7 @@ class HashRing:
         '''
         If any node x is to be removed, return the node to which keys from x relocated to
         '''
-        node_hash = hashlib.md5(node.encode()).hexdigest()
+        node_hash = HashRing.get_hash(node)
         
         # return -1 if node does not exist on the ring
         if node_hash not in self.nodes:
